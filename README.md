@@ -43,5 +43,17 @@ Therefore KNN algorithm just used but any classification algorithms can be used.
 n_neighbors parameter were set 1,3,5 sequantially and scores were listed.   
 You can see in below.  
 
-![image](https://github.com/Salim-Yigit/GenreClassification/assets/94362868/cbeb9a0a-0d3f-4be3-8d1f-33c621415d2f)
+![image](https://github.com/Salim-Yigit/GenreClassification/assets/94362868/cbeb9a0a-0d3f-4be3-8d1f-33c621415d2f) 
+
+## REQUIREMENTS    
+matplotlib==3.6.0    
+numpy==1.22.3    
+pandas==1.5.1    
+scikit-learn==1.2.0    
+scipy==1.10.0  
+sklearn==0.0.post1  
+
+The versions of libraries which are used in the project. 
+You can setup your enviroment with this versions,if code doesn't work on your enviroment.  
+There is a requirements.txt file to make your job easier.  
 
