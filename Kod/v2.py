@@ -7,6 +7,13 @@ from scipy import signal
 import csv 
 from sklearn.neighbors import KNeighborsClassifier 
 from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier 
+from lightgbm import LGBMClassifier 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import *  
+import seaborn as sns 
+import itertools
+
 
 def load_from_folder(folder_path,train=True,train_size=20,test_size=10):  
     songs = [] 
@@ -217,7 +224,7 @@ def prediction(y_test,y_pred):
                                                5:'country',6:'jazz',7:'pop',
                                                8:'reggae',9:'rock'}) 
     
-    print(df.head(30))
+    print(df.head(5))
     score = (cnt / len(y_test)) * 100
     print('Yüzdelik doğruluk oranı:', score)
 
@@ -233,9 +240,41 @@ def fill_zeros_with_average(song_list):
             filled_list.append(song)
     return filled_list
 
+
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='',
+                          cmap=plt.cm.Blues
+                          ):
+
+  if normalize:
+      cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+  #print(cm)
+
+  plt.imshow(cm, interpolation='nearest', cmap=cmap)
+  plt.title(title)
+  plt.colorbar()
+  tick_marks = np.arange(len(classes))
+  plt.xticks(tick_marks, classes, rotation=45)
+  plt.yticks(tick_marks, classes)
+
+  fmt = '.2f' if normalize else 'd'
+  thresh = cm.max() / 2.
+  for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+      plt.text(j, i, format(cm[i, j], fmt),
+               horizontalalignment="center",
+               color="white" if cm[i, j] > thresh else "black")
+
+  plt.tight_layout()
+  plt.ylabel('True label')
+  plt.xlabel('Predicted label')
+  plt.show()
+
+
 if __name__ == '__main__': 
     # samplerate, data = wavfile.read('Data/genres_original/blues/blues.00000.wav')  
-    
+    """
     blues_train = load_from_folder('../Data/genres_original/blues',train=True,train_size=90,test_size=10)  
     blues_test = load_from_folder('../Data/genres_original/blues',train=False,train_size=90,test_size=10)
     print('blues okey')
@@ -266,7 +305,7 @@ if __name__ == '__main__':
 
     rock_train = load_from_folder('../Data/genres_original/rock',train=True,train_size=90,test_size=10)  
     rock_test = load_from_folder('../Data/genres_original/rock',train=False,train_size=90,test_size=10) 
-    
+
     print('read correctly')
     hiphop_train = fill_zeros_with_average(hiphop_train) 
     classical_train = fill_zeros_with_average(classical_train)
@@ -370,14 +409,19 @@ if __name__ == '__main__':
                   ,'country_hamming_test.csv','jazz_hamming_test.csv'
                   ,'pop_hamming_test.csv','reggae_hamming_test.csv','rock_hamming_test.csv',train=False,window_type='hamming')
 
+    """
+    scaler = StandardScaler() 
+    genre_classses = ['blues' , 'metal' , 'disco' ,
+                    'hiphop', 'classical','country',
+                    'jazz','pop','reggae','rock'] 
     
-    scaler = StandardScaler()
     #TRAIN- PREDICT HAMMING
-    X_train, y_train = get_ready_training('hamming_training.csv')
-    X_test, y_test = get_ready_training('hamming_training.csv')  
+    X_train, y_train = get_ready_training('hanning_training.csv')
+    X_test, y_test = get_ready_training('hanning_training.csv')  
     X_train = scaler.fit_transform(X_train) 
-    X_test = scaler.fit_transform(X_test)
+    X_test = scaler.fit_transform(X_test)  
 
+    print('-----------------------------------------------------------------------------------------------------')
     print('Hanning:')
     k = [1,3,5]
     for i in k : 
@@ -385,7 +429,11 @@ if __name__ == '__main__':
         knn_model.fit(X_train,y_train) 
         print('Accuracy for k=',i)
         y_pred = knn_model.predict(X_test)   
-        prediction(y_test=y_test,y_pred=y_pred) 
+        cm = confusion_matrix(y_test, y_pred) 
+        print(f"KNN k={i}, window type = Hanning, accuracy_score = ",'{:.2f}'.format(accuracy_score(y_true=y_test,y_pred=y_pred)))
+        plot_confusion_matrix(cm, genre_classses,title=f"KNN k={i}, window = Hammig")
+        #prediction(y_test=y_test,y_pred=y_pred) 
+        
 
     # BARTLETT TRAIN-TEST
     X_train, y_train = get_ready_training('bartlett_training.csv')
@@ -393,21 +441,26 @@ if __name__ == '__main__':
     X_train = scaler.fit_transform(X_train) 
     X_test = scaler.fit_transform(X_test)
 
-    print('Bartlett:')
+    print("----------------------------------------------------------------------------------------------------")
+    print('Bartlett:') 
     k = [1,3,5]
     for i in k : 
         knn_model = KNeighborsClassifier(i) 
         knn_model.fit(X_train,y_train) 
         print('Accuracy for k=',i)
         y_pred = knn_model.predict(X_test)   
-        prediction(y_test=y_test,y_pred=y_pred) 
+        cm = confusion_matrix(y_test, y_pred) 
+        print(f"KNN k={i}, window type = Barlett, accuracy_score = ",'{:.2f}'.format(accuracy_score(y_true=y_test,y_pred=y_pred)))
+        plot_confusion_matrix(cm, genre_classses,title=f"KNN k={i} , window = Barlett")
+        #prediction(y_test=y_test,y_pred=y_pred) 
 
-    # HANNING TRAIN-TEST 
+    # HAMMING TRAIN-TEST 
     X_train, y_train = get_ready_training('hamming_training.csv')
     X_test, y_test = get_ready_training('hamming_training.csv')  
     X_train = scaler.fit_transform(X_train) 
-    X_test = scaler.fit_transform(X_test)
+    X_test = scaler.fit_transform(X_test) 
 
+    print("----------------------------------------------------------------------------------------------------")
     print('Hamming:')
     k = [1,3,5]
     for i in k : 
@@ -415,4 +468,7 @@ if __name__ == '__main__':
         knn_model.fit(X_train,y_train) 
         print('Accuracy for k=',i)
         y_pred = knn_model.predict(X_test)   
-        prediction(y_test=y_test,y_pred=y_pred)
+        cm = confusion_matrix(y_test, y_pred) 
+        print(f"KNN k={i}, window type = Hamming, accuracy_score = ",'{:.2f}'.format(accuracy_score(y_true=y_test,y_pred=y_pred)))
+        plot_confusion_matrix(cm, genre_classses,title=f"KNNN k = {i}, window = Hamming")
+        #prediction(y_test=y_test,y_pred=y_pred) 
