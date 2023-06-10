@@ -43,7 +43,17 @@ Therefore KNN algorithm just used but any classification algorithms can be used.
 n_neighbors parameter were set 1,3,5 sequantially and scores were listed.   
 You can see in below.  
 
-![image](https://github.com/Salim-Yigit/GenreClassification/assets/94362868/cbeb9a0a-0d3f-4be3-8d1f-33c621415d2f) 
+### CONFUSION MATRIX 
+An example of Confusion MAatrix. When you run program, there will be 9 confusion matrix in total.    
+
+![Screenshot from 2023-06-10 21-36-00](https://github.com/Salim-Yigit/GenreClassification/assets/94362868/a8214031-0c38-4af4-9274-2d4fc66ff2eb)
+
+
+#### SCORES 
+List of all Scores with All Parameters    
+
+![Screenshot from 2023-06-10 21-36-54](https://github.com/Salim-Yigit/GenreClassification/assets/94362868/84c0c9bf-aebc-4302-bf5c-128331d9c6fd)
+
 
 ## REQUIREMENTS    
 matplotlib==3.6.0    
