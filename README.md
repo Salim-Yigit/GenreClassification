@@ -1,4 +1,4 @@
-# Musical gnere classification with KNN 
+# Musical genre classification with KNN 
 GTZAN Dataset was used. You can download from [Dataset](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification).    
 Kod folder includes features of songs, this features extracted with FFT and STFT.  
 In code file you can see FFT fucntion, this function was written by me. It is too slow numpy fft function.  
